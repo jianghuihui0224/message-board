@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>留言板</title>
+  <link rel="stylesheet" href="./assets/bootstrap.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="display-1">留言板</h1>
+    <hr>
+    <ul id="messages" class="list-unstyled">
+      
+    </ul>
+    <hr>
+    <form>
+      <div class="form-group">
+        <label for="txt_name">称呼：</label>
+        <input class="form-control" id="txt_name" type="text">
+      </div>
+      <div class="form-group">
+        <label for="txt_content">留言：</label>
+        <textarea class="form-control" id="txt_content" cols="80" rows="10"></textarea>
+      </div>
+      <button type="button" id="btn_send" class="btn btn-primary">提交</button>
+    </form>
+  </div>
+<script src="/template-web.js"></script>
+<script type="text/html" id="model">
+  {{each arr}}
+  <li class="media">
+    <img class="mr-3" src="./assets/avatar.png" alt="张三">
+    <div class="media-body">
+      <h4>{{$value.name}}</h4>
+      <p>{{$value.content}}</p>
+    </div>
+  </li>
+  {{/each}}
+</script>
+<script>
+  var xhr = new XMLHttpRequest();//必须写在外面,要不变成局部变量,下面无法使用
+  function loadDate() {
+    xhr.open('GET', '/getMsg');
+    xhr.send();
+    xhr.onreadystatechange = function () {
+      if (this.readyState === 4) {
+        var data = this.responseText;
+        data = JSON.parse(data);
+        var str = template('model', {
+          arr : data
+        });
+        document.getElementById('messages').innerHTML = str;
+      }
+    }
+  }
+  loadDate()
+
+  
+  document.getElementById('btn_send').onclick = function () {
+    var chenghu = document.getElementById('txt_name').value;//获取输入的名称
+    var liuyan = document.getElementById('txt_content').value;//获取输入的内容
+    xhr.open('POST', '/addMsg');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+    xhr.send('name=' + chenghu + '&content=' + liuyan);//传入参数
+    //参数为获取到的用户输入的内容
+    xhr.onreadystatechange = function () {
+      if (this.readyState === 4) {//判断事件最后执行状态,获取内容
+        if (this.responseText === 'true') {//判断响应内容为true,表示内容添加成功
+          loadDate();
+          document.getElementById('txt_name').value='';
+          document.getElementById('txt_content').value='';
+        }
+      }
+    }
+  
+  }
+
+
+</script>
+  
+</body>
+</html>
