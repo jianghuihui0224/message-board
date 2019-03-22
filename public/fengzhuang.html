@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function ajax(method, url, params, done) {
+            method = method.toUpperCase();
+
+            var xhr = new XMLHttpRequest();
+            if (method === 'GET') {
+                url = url + '?' + params
+                xhr.open(method,url);
+                xhr.send();
+            } else {
+                xhr.open(method,url);                
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.send(params);
+            }
+
+            xhr.onreadystatechange = function () {
+                if(this.readyState === 4) {
+                    done(this.responseText)
+                };
+            };
+        };
+        // function done(res) {
+        //     console.log(res + 'hehe')
+        // }
+        ajax('GET', '/query-get', 'id=one&name=zs', function (res) {console.log(res + 'hehe')})
+        ajax('POST', '/query-post', 'id=two&name=ls', function (res) {console.log(res + 'haha')})
+        // ajax('GET', '/query-get', 'id=one&name=zs')
+        // ajax('POST', '/query-post', 'id=two&name=ls')
+    </script>
+</body>
+</html>
